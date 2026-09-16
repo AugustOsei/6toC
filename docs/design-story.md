@@ -1,0 +1,5 @@
+# 6TOC design story
+
+The visitor arrives with too many possible goals and too little room to pursue all of them well. The cover asks them to choose up to three that matter most, give those goals six focused months, and bring trusted people along for the work. A stack of six spiral-bound calendar pages is the chapter’s single organizing image. The cover stays timeless with Month 1 through Month 6 labels; every colored sheet carries a short prompt that moves from choosing carefully to bringing the goals home. Inside the book, each page maps to one exact challenge month even when the chapter begins halfway through a conventional calendar month. Goal scraps feel physically distinct without becoming separate mini-dashboards.
+
+The emotional sequence is deliberately quiet: possibility on the cover, commitment during onboarding, orientation in the book, then satisfying evidence as checkmarks draw themselves, milestones get pinned, and Pocket scraps accumulate. The empty Vision frame leaves a deliberate promise for the next phase without pretending AI is already connected.

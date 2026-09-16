@@ -1,0 +1,9 @@
+# 6TOC design guide
+
+6TOC should feel like a carefully kept field notebook: warm paper, black ink, restrained color, editorial headlines, and handwriting only for human asides. The visual hierarchy moves from oversized Fraunces headings to compact uppercase labels and readable DM Sans body copy. Caveat is reserved for annotations.
+
+The palette is white paper `#f7f7f3`, near-black `#19191d`, and vivid pen inks: signature cobalt `#3037d4`, tomato `#ed3c32`, leaf `#159447`, and occasional ochre `#f2a51d`. Accent color communicates identity, never meaning by itself.
+
+Pages use wide breathing room, dotted white canvas, doubled irregular rules, and small physical cues such as tape or binding marks. Space Mono gives labels and inputs the precise utility rhythm seen in sketch tools; Caveat supplies live ink gestures, while Fraunces remains available for editorial moments. Controls respond in 160–300ms. The calendar keeps six persistent sheets in one GSAP-controlled stack. In the book, the earlier/later controls turn sheets over the binding. On the landing page, months are torn off along the perforation and fall downward in stepped, stop-motion frames, leaving a ragged stub on the rings; nothing moves above the binding, so the hero copy stays readable. Each new page then inks itself in: ticks draw day by day, today is stamped, and the progress rule fills. Motion stays flat and hand-drawn — realistic shaded paper clashes with the ink style. Each page uses its own ink color and prompt so the stack reads as six distinct chapters. Reduced-motion users see the completed page immediately. All functional controls remain semantic, keyboard reachable, and visibly focused.
+
+Avoid generic dashboards, nested cards, decorative charts, bright gradients, excessive badges, and handwriting for body text.
