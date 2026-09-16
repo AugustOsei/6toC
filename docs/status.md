@@ -4,6 +4,11 @@ Last updated 2026-09-16. Read this first when picking the project back up.
 
 ## How the app runs today
 
+- **Live:** https://6toc.augustministry.workers.dev (Cloudflare Worker `6toc`, deploys on
+  every push to `main`). Checked 2026-09-16: Supabase mode, `/book` redirects to sign-in,
+  callback errors handled, no console errors. A real magic-link sign-in still needs a
+  human with an inbox.
+
 - Supabase project `kkwrrakcsebrwronsydh` is connected for builds through the committed
   `.env.production` (public URL + publishable key; the schema has been run). `npm run dev`
   doesn't read that file, so local dev without `.env.local` still runs in **local preview mode**: a yellow ribbon, no
