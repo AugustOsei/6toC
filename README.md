@@ -33,6 +33,8 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=YOUR_PUBLISHABLE_OR_ANON_KEY
 NEXT_PUBLIC_SITE_URL=http://localhost:3016
 ```
 
+`NEXT_PUBLIC_SITE_URL` is optional. Without it, magic links return to whatever address the reader signed in from. Set it only to force one address, such as your own domain.
+
 Use the public publishable/anon key, never the service-role key. Restart the dev server after changing environment variables.
 
 The initial schema enforces one active challenge per user, exactly six calendar months per challenge, at most three goals, goal ownership, deadline bounds, completion consistency, and RLS. The UI requires at least one goal when creating a challenge. Pocket items and plan items have owner-only policies; supporters receive no automatic private access.
