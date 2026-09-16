@@ -7,8 +7,8 @@ Last updated 2026-09-16. Read this first when picking the project back up.
 - No `.env.local` exists, so the app runs in **local preview mode**: a yellow ribbon, no
   real sign-in, and everything is saved in the browser's `localStorage`. Supabase code
   paths exist but have not been exercised against a real project.
-- The folder is **not a git repository** yet. Run `git init` before the next round of
-  changes so there is history to diff against.
+- The folder is a git repository (initialised 2026-09-16, no remote yet). The first commit
+  is the baseline from before the accounts-and-editing round.
 - There are **no automated tests**. Checks are `npm run lint`, `npm run typecheck`,
   `npm run build`.
 - Dev server: `npm run dev` on port 3016. Running `next build` while the dev server is
@@ -40,13 +40,43 @@ Last updated 2026-09-16. Read this first when picking the project back up.
 - Chapter intro, start/end dates, the interactive six-month calendar with earlier/later
   buttons and a WebGL page curl (`lib/page-turn.ts`).
 - One card per goal: deadline, days left, plan progress, Pocket and milestone counts.
+  Each card uses its goal's colour (tomato / cobalt / leaf). Until 2026-09-16 a CSS
+  ordering bug made every card and goal page tomato.
+- **Add a goal later:** while fewer than three spaces are used, a dashed "use another
+  space" card opens the goal form (deadline between today and the end of the chapter).
+- **Sign out** in the header (Supabase mode). Preview mode keeps "Close book ×".
 
 **A goal** (`/book/goals/[id]`)
-- **Plan:** add a step (optional due date), tick it off / untick it, edit its title.
-- **Pocket:** add a note or a link.
-- **Milestones:** pin a win with an optional description (dated today).
-- **Done:** "I did the thing ✓" marks the goal complete and shows days to spare.
+- **The goal itself:** "Edit this thing" changes title, "done looks like" and deadline
+  (kept inside the chapter).
+- **Plan:** add a step (optional due date), tick / untick, edit title and due date,
+  move up / down, delete. New steps get the next `sort_order` (in Supabase mode they used
+  to all get 0).
+- **Pocket:** add, edit or delete a note or a link (type can't change after adding).
+- **Milestones:** pin a win with an optional description and a date (chapter start to
+  today); edit or delete it.
+- **Done:** "I did the thing ✓" marks the goal complete and shows days to spare;
+  "not quite — reopen" undoes it.
+- Every delete asks first ("tear it out? yes / keep"). There is no undo.
 - **Vision:** placeholder panel; the generate button is deliberately disabled.
+
+**Accounts** (Supabase mode)
+- `/sign-in`: email → magic link → `/auth/callback?next=/book` → the book. In preview mode
+  the page explains there are no accounts and links to the book.
+- `/auth/callback` only follows same-site `next` paths, and sends failed or missing codes
+  to `/sign-in?error=…` with a message.
+- `/book` is guarded twice: `proxy.ts` 307s signed-out readers to `/sign-in`, and
+  `app/book/layout.tsx` checks `getUser()` on the server.
+- Onboarding saves straight away if the reader is already signed in (e.g. signed in with
+  no book yet) instead of sending a second link.
+- Sign-in links appear in the landing header and on onboarding, only in Supabase mode.
+- Checked on 2026-09-16 against a throwaway copy with placeholder Supabase variables
+  (redirects, error messages, open-redirect guard). **Not yet tried against a real
+  Supabase project** — see Launch.
+
+**Landing page, "how it works"**
+- Three cards under the hero: pick up to three, give each a deadline, plan it and tick it
+  off. The hero button is still above the fold at 1440×900.
 
 **Database** (`supabase/migrations/202609150001_initial_schema.sql`)
 - One active challenge per user, exactly six months, at most three goals, deadline
@@ -59,28 +89,15 @@ Last updated 2026-09-16. Read this first when picking the project back up.
   Month THREE message ("Ask your people for a push") both lean on this, and none of it
   exists in the UI. Tables `supporters` and `encouragements` exist (with an invite status
   enum) but nothing reads or writes them. Needs: invite flow, the supporter's view,
-  sending encouragement, showing it in the book, and a decision on what supporters may
-  see (Plan and Pocket must stay private — see the table comments).
-- **A "how it works" section** under the hero. Suggested three steps, all true today:
-  pick up to three things and define "done"; give each a deadline inside six months;
-  plan and track it. Add "invite your people" only once supporters ship.
+  sending encouragement, showing it in the book, and **a decision from the owner on what
+  supporters may see** (Plan and Pocket must stay private — see the table comments).
+  Once it ships, add "invite your people" as a fourth "how it works" card.
 
-### Accounts
-- **No sign-in page for returning users.** The only way to get a magic link is to go
-  through onboarding again (it skips creating a second challenge if one exists).
-- **No sign-out.**
-- **`/book` is guarded only in the browser** — it redirects to onboarding when no book
-  loads. There is no server-side auth check.
-- **`/auth/callback` ignores a failed code exchange** and redirects regardless.
-
-### Editing what already exists
-- Goals: cannot edit title, "done looks like", or deadline after onboarding; cannot
-  add a goal later when fewer than three were used; cannot undo "done"; the `paused`
-  status is unused.
-- Plan: no delete, no reordering, no changing a due date after adding; the
-  `month` / `week` / `day` plan types exist in the schema but only `task` is used.
-- Pocket: no edit, no delete, no file or image uploads (Storage not set up).
-- Milestones: no edit or delete; the date is always today; `shareable` is never set.
+### Editing what already exists (leftovers)
+- Goals: the `paused` status is unused; goals can't be deleted.
+- Plan: the `month` / `week` / `day` plan types exist in the schema but only `task` is used.
+- Pocket: no file or image uploads (Storage not set up).
+- Milestones: `shareable` is never set.
 
 ### The rest of the six months
 - **End of chapter:** nothing happens when the six months end — no recap, no way to
@@ -95,12 +112,18 @@ Last updated 2026-09-16. Read this first when picking the project back up.
 ### Launch
 - Connect a real Supabase project and test the whole magic-link path end to end.
 - Deploy (Vercel) and add the deployed `/auth/callback` URL in Supabase.
-- `git init`, and add at least smoke tests for onboarding and the book.
+- Add a git remote, and at least smoke tests for onboarding, sign-in and the book.
+- In Supabase **URL Configuration**, allow `…/auth/callback**` (with the wildcard), since
+  sign-in links now carry `?next=`.
 
 ## Known rough edges
 
 - The landing calendar's tear-off is a first pass. It was checked with measurements and
   paused frames, not by eye at full speed — judge it in a browser before polishing.
+- The browser pane used for testing doesn't submit forms on a synthetic Enter key; forms
+  were tested by clicking. Real keyboards were not re-checked this round.
+- On the book page at ~700px wide, "open this page →" overlaps the milestones count on
+  each goal card.
 - On narrow phones the calendar page's bottom row (days 29–30) is partly cut off by the
   page frame. This predates the recent work.
 - The book's WebGL page curl rasterises each page with `html-to-image`, which is heavy

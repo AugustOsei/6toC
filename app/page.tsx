@@ -1,5 +1,7 @@
 import { Brand, HandDrawnLink } from "@/components/ui";
 import { SixMonthCalendar } from "@/components/six-month-calendar";
+import Link from "next/link";
+import { hasSupabaseConfig } from "@/lib/config";
 import { addCalendarMonths, toDateInput } from "@/lib/dates";
 
 export default function HomePage() {
@@ -7,7 +9,7 @@ export default function HomePage() {
   const endDate = toDateInput(addCalendarMonths(startDate, 6));
   return <main className="landing">
     <div className="landing__grain" aria-hidden="true" />
-    <header className="landing__header"><Brand /><span className="edition">A six-month field guide</span></header>
+    <header className="landing__header"><Brand /><span className="edition">A six-month field guide</span>{hasSupabaseConfig && <Link href="/sign-in" className="text-button">Sign in</Link>}</header>
     <section className="hero">
       <div className="hero__copy">
         <p className="eyebrow">TOO MANY GOALS. NOT ENOUGH FOLLOW-THROUGH?</p>
@@ -18,6 +20,26 @@ export default function HomePage() {
       </div>
       <SixMonthCalendar startDate={startDate} endDate={endDate} mode="cover" />
     </section>
+    <section className="how-it-works" aria-labelledby="how-it-works-title">
+      <p className="eyebrow">HOW IT WORKS</p>
+      <h2 id="how-it-works-title">Three steps. No dashboard.</h2>
+      <ol>
+        {STEPS.map((step, index) => <li key={step.title} className={`how-step accent-${step.accent}`}>
+          <span className="how-step__number">0{index + 1}</span>
+          <h3>{step.title}</h3>
+          <p>{step.body}</p>
+          <span className="how-step__note">{step.note}</span>
+        </li>)}
+      </ol>
+      <HandDrawnLink href="/onboarding">Start my six months <span aria-hidden="true">→</span></HandDrawnLink>
+    </section>
     <footer className="landing__footer"><span>Begin anywhere.</span><span>© 6TOC</span></footer>
   </main>;
 }
+
+// Only promise what the app does today. Add "invite your people" once supporters ship.
+const STEPS = [
+  { accent: "tomato", title: "Pick up to three", body: "Name the things that matter, and write down what “done” looks like for each one.", note: "fewer is fine" },
+  { accent: "cobalt", title: "Give each a deadline", body: "Every thing gets its own finish date, somewhere inside the next six months.", note: "1 month? 4? your call" },
+  { accent: "leaf", title: "Plan it, tick it off", body: "Break each thing into small moves, keep notes and links in its pocket, and pin the wins as they land.", note: "every tick is progress" },
+] as const;

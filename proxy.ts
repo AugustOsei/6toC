@@ -17,7 +17,13 @@ export async function proxy(request: NextRequest) {
       },
     },
   });
-  await supabase.auth.getClaims();
+  const { data } = await supabase.auth.getClaims();
+
+  // A quick bounce for signed-out readers; app/book/layout.tsx does the real check.
+  const path = request.nextUrl.pathname;
+  if (!data?.claims && (path === "/book" || path.startsWith("/book/"))) {
+    return NextResponse.redirect(new URL("/sign-in", request.url));
+  }
   return response;
 }
 

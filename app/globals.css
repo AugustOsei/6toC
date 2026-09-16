@@ -352,3 +352,66 @@ body::before { opacity:.1; }
 
 /* Phones use tighter wrapper padding, page insets and grid padding; same derivation. */
 @media(max-width:560px){.six-calendar--cover::after{left:calc(.45rem + .4rem + 3px + .55rem + (100% - .9rem - .8rem - 6px - 1.1rem) / 14 - .35em);bottom:.3rem;font-size:1.15rem}}
+
+/* How it works: three index cards under the hero. */
+.how-it-works { position:relative; z-index:2; width:100%; max-width:1180px; margin:clamp(3rem,8vw,6rem) auto 3rem; }
+.how-it-works h2 { margin:.4rem 0 2rem; color:var(--cobalt); font:700 clamp(2.6rem,5vw,4.2rem)/.95 var(--font-hand); transform:rotate(-1deg); }
+.how-it-works ol { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1.5rem; margin:0 0 2.5rem; padding:0; list-style:none; }
+.how-step { position:relative; padding:1.6rem 1.5rem 3.2rem; background:rgba(255,254,250,.97); border:2px solid var(--ink); border-radius:4px 9px 3px 7px; box-shadow:5px 6px 0 color-mix(in srgb,var(--accent) 22%,transparent); }
+.how-step:nth-child(1){transform:rotate(-.6deg)}.how-step:nth-child(2){transform:rotate(.5deg)}.how-step:nth-child(3){transform:rotate(-.25deg)}
+.how-step__number { font:700 1.6rem var(--font-mono); color:var(--accent); border-bottom:3px solid var(--accent); }
+.how-step h3 { margin:1.1rem 0 .6rem; color:var(--accent); font:700 2.1rem/1 var(--font-hand); }
+.how-step p { margin:0; font-size:.85rem; line-height:1.6; }
+.how-step__note { position:absolute; right:1.2rem; bottom:.9rem; color:var(--accent); font:600 1.15rem var(--font-hand); transform:rotate(-3deg); }
+@media(max-width:850px){.how-it-works ol{grid-template-columns:1fr}}
+
+/* Small edit / delete controls on plan rows, pocket scraps and milestones. They stay
+   visible (not hover-only) so they work on touch screens. */
+.scrap-actions { display:flex; flex-wrap:wrap; align-items:center; justify-content:flex-end; gap:.15rem; }
+.scrap-action { border:0; background:none; padding:.35rem .45rem; color:var(--muted); font:600 1rem var(--font-hand); cursor:pointer; text-decoration:underline 1px dotted; text-underline-offset:3px; }
+.scrap-action:hover:not(:disabled) { color:var(--accent,var(--cobalt)); }
+.scrap-action:disabled { opacity:.3; cursor:not-allowed; }
+.scrap-action--danger { color:#b3261e; font-weight:700; }
+.confirm-delete { display:inline-flex; align-items:center; gap:.1rem; }
+.confirm-delete>span { font:600 1rem var(--font-hand); color:#b3261e; }
+.plan-list li { grid-template-columns:36px minmax(0,1fr) auto; }
+.plan-list li strong { overflow-wrap:anywhere; }
+.edit-row { flex-wrap:wrap; align-items:center; }
+.edit-row input { min-width:0; padding:.3rem .2rem; font:inherit; }
+.edit-row input:not([type=date]) { flex:1 1 12rem; }
+.pocket-scrap { padding-bottom:1rem; }
+.pocket-scrap .scrap-actions,.milestone-list .scrap-actions { margin-top:.6rem; }
+.scrap-edit { display:grid; gap:.5rem; margin-top:.7rem; }
+.scrap-edit input,.scrap-edit textarea { width:100%; border:2px dashed #a2a2af; background:rgba(255,255,255,.7); padding:.5rem .6rem; border-radius:3px 7px 4px 6px; font:inherit; font-size:.9rem; }
+.scrap-edit textarea { min-height:90px; resize:vertical; }
+.milestone-add { grid-template-columns:1fr; }
+.milestone-add input[type=date] { max-width:14rem; }
+.completion-banner { flex-wrap:wrap; gap:.5rem 1rem; }
+
+/* Editing a goal in place, and adding one into an empty shelf space. */
+.goal-form { display:grid; gap:0; }
+.goal-form .line-field { margin:.6rem 0; }
+.goal-form .line-field input,.goal-form .line-field textarea { font-size:1rem; }
+.goal-form__date input { max-width:14rem; }
+.goal-form__actions { display:flex; justify-content:flex-end; align-items:center; gap:1rem; margin-top:.8rem; }
+.goal-form__actions .ink-button { min-height:44px; padding:.55rem 1rem; }
+.goal-title__edit { min-width:0; }
+.goal-title .text-button { margin-top:.6rem; padding-left:0; }
+.goal-scrap--empty { display:flex; flex-direction:column; align-items:flex-start; gap:1.4rem; width:100%; color:var(--muted); font:inherit; text-align:left; cursor:pointer; border-style:dashed; background:rgba(255,254,250,.6); box-shadow:none; }
+.goal-scrap--empty::after { display:none; }
+.goal-scrap--empty>strong { color:var(--cobalt); font:700 2.2rem/1 var(--font-hand); }
+.goal-scrap--adding { cursor:auto; background:rgba(255,254,250,.97); color:var(--ink); }
+.goal-scrap--adding .goal-form { width:100%; }
+
+.sign-in-page form { display:block; }
+.sign-in-actions { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:1rem; margin-top:2rem; }
+
+/* Goal colours last, so they beat the tomato default that .goal-scrap and .detail-shell
+   set further up with the same specificity. */
+.accent-tomato { --accent:var(--tomato); } .accent-cobalt { --accent:var(--cobalt); } .accent-leaf { --accent:var(--leaf); }
+/* The deadline sticky note is absolutely placed on narrow screens; keep it on its card. */
+.goal-title { position:relative; }
+@media(max-width:560px){.plan-list li{grid-template-columns:36px minmax(0,1fr);grid-template-rows:auto auto;align-items:start;row-gap:0;min-height:0;padding:.7rem 0 .2rem}.plan-list li .scrap-actions{grid-column:2;justify-content:flex-start;margin-left:-.45rem}}
+/* "Check your inbox" and sign-in: same hand-lettered headline as the onboarding pages. */
+.message-page h1 { margin:1rem 0; color:var(--cobalt); font:700 clamp(3rem,7vw,4.5rem)/.92 var(--font-hand); letter-spacing:-.02em; }
+.message-page p { line-height:1.6; }

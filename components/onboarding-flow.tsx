@@ -1,9 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Brand, HandDrawnButton, PaperPage, PreviewRibbon, Tape } from "@/components/ui";
-import { DRAFT_KEY, saveOnboarding, sendMagicLink } from "@/lib/data-store";
+import { DRAFT_KEY, hasSession, saveOnboarding, sendMagicLink } from "@/lib/data-store";
 import { addCalendarMonths, clampDate, toDateInput } from "@/lib/dates";
 import type { GoalDraft, OnboardingDraft } from "@/lib/types";
 
@@ -54,8 +55,10 @@ export function OnboardingFlow({ productionMode }: { productionMode: boolean }) 
     const draft = { name: name.trim(), email: email.trim(), startDate: today, endDate, goals: filled };
     setStatus("saving");
     try {
-      if (productionMode) { localStorage.setItem(DRAFT_KEY, JSON.stringify(draft)); await sendMagicLink(draft.email); setStatus("emailed"); }
-      else { await saveOnboarding(draft); router.push("/book"); }
+      // Someone already signed in (e.g. via /sign-in, with no book yet) can bind it straight away.
+      if (productionMode && !(await hasSession())) { localStorage.setItem(DRAFT_KEY, JSON.stringify(draft)); await sendMagicLink(draft.email); setStatus("emailed"); }
+      else if (await saveOnboarding(draft)) router.push("/book");
+      else throw new Error("Please sign in again.");
     } catch (cause) { setError(cause instanceof Error ? cause.message : "We couldn’t turn the page. Try once more."); setStatus("idle"); }
   }
 
@@ -64,7 +67,7 @@ export function OnboardingFlow({ productionMode }: { productionMode: boolean }) 
 
   return <main className="onboarding-shell">
     {!productionMode && <PreviewRibbon />}
-    <header className="book-header"><Brand compact /><span>SETUP · PAGE {step} OF 3</span></header>
+    <header className="book-header"><Brand compact /><span>SETUP · PAGE {step} OF 3</span>{productionMode && <Link href="/sign-in" className="text-button">Have a book? Sign in</Link>}</header>
     <div className="page-progress" aria-label={`Step ${step} of 3`}>{[1,2,3].map((n) => <span key={n} className={n <= step ? "active" : ""} />)}</div>
     <PaperPage className="onboarding-page">
       <span className="binding-holes" aria-hidden="true" />

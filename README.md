@@ -1,6 +1,6 @@
 # 6TOC — 6 Months to Change
 
-A production-minded first foundation for a playful six-month goal book. A visitor can create one chapter with one to three independently dated goals, open each goal, manage its plan, keep notes and URLs in Pocket, pin milestones, and mark a goal done early.
+A production-minded first foundation for a playful six-month goal book. A visitor can create one chapter with one to three independently dated goals, come back later through a magic-link sign-in, open each goal, edit it, manage and reorder its plan, keep notes and URLs in Pocket, pin milestones, and mark a goal done early.
 
 ## Stack
 
@@ -23,7 +23,7 @@ Open `http://localhost:3016`. Port `3016` is the project default so 6TOC does no
 
 1. Create a Supabase project.
 2. Open **SQL Editor**, paste `supabase/migrations/202609150001_initial_schema.sql`, and run it once. With the Supabase CLI, use `supabase db push` instead.
-3. In **Authentication → URL Configuration**, set the site URL to `http://localhost:3016` and add `http://localhost:3016/auth/callback` as a redirect URL. Add the deployed Vercel callback URL later.
+3. In **Authentication → URL Configuration**, set the site URL to `http://localhost:3016` and add `http://localhost:3016/auth/callback**` as a redirect URL (the trailing `**` matters: sign-in links carry a `?next=` path). Add the deployed Vercel callback URL the same way later.
 4. Keep the Email provider enabled. Magic-link email is the Phase 1 sign-in method.
 5. Copy `.env.example` to `.env.local` and fill in:
 
@@ -56,5 +56,4 @@ npm run build
 ## What's built and what isn't
 
 See [`docs/status.md`](docs/status.md) for the current state: what works, what is not built
-yet (supporters, sign-in for returning users, editing, end of chapter, reminders, Vision,
-deploy), known rough edges, and decisions already made.
+yet (supporters, end of chapter, reminders, Vision, deploy), known rough edges, and decisions already made.
