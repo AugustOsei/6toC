@@ -11,7 +11,8 @@ Last updated 2026-09-16. Read this first when picking the project back up.
   is the baseline from before the accounts-and-editing round.
 - There are **no automated tests**. Checks are `npm run lint`, `npm run typecheck`,
   `npm run build`.
-- Dev server: `npm run dev` on port 3016. Running `next build` while the dev server is
+- Dev server: `npm run dev` on port 3016. `npm run preview` runs the Cloudflare Workers
+  build locally on port 8787. Running `next build` while the dev server is
   up overwrites `.next` and has twice knocked the dev server over; restart it after a build.
 
 ## Built and working (in preview mode)
@@ -111,7 +112,11 @@ Last updated 2026-09-16. Read this first when picking the project back up.
 
 ### Launch
 - Connect a real Supabase project and test the whole magic-link path end to end.
-- Deploy (Vercel) and add the deployed `/auth/callback` URL in Supabase.
+- Deploy to **Cloudflare Workers** (chosen over Vercel, 2026-09-16) and add the deployed
+  `…/auth/callback**` URL in Supabase. The OpenNext setup is done (`wrangler.jsonc`,
+  `open-next.config.ts`, `npm run preview` / `deploy`; see the README). A local Workers
+  build passed every route check, including the `proxy.ts` redirect, which OpenNext still
+  calls experimental. Re-check `/book` while signed out after the first real deploy.
 - Add a git remote, and at least smoke tests for onboarding, sign-in and the book.
 - In Supabase **URL Configuration**, allow `…/auth/callback**` (with the wildcard), since
   sign-in links now carry `?next=`.

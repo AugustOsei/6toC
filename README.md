@@ -37,6 +37,25 @@ Use the public publishable/anon key, never the service-role key. Restart the dev
 
 The initial schema enforces one active challenge per user, exactly six calendar months per challenge, at most three goals, goal ownership, deadline bounds, completion consistency, and RLS. The UI requires at least one goal when creating a challenge. Pocket items and plan items have owner-only policies; supporters receive no automatic private access.
 
+## Deploy to Cloudflare
+
+6TOC runs on Cloudflare Workers through the [OpenNext adapter](https://opennext.js.org/cloudflare).
+`wrangler.jsonc` names the Worker `6toc`.
+
+- `npm run preview` builds for Workers and serves it locally (http://localhost:8787), in the
+  same runtime Cloudflare uses.
+- `npm run deploy` builds and deploys from your machine (run `npx wrangler login` once first).
+
+The `NEXT_PUBLIC_*` variables are baked in **at build time**:
+- when deploying from your machine, they come from `.env.local`;
+- when Cloudflare builds from GitHub, add them under the Worker's **Settings → Build →
+  Variables and secrets**, then trigger a new build.
+
+`proxy.ts` (session refresh and the `/book` redirect) runs as Node.js middleware, which
+OpenNext labels experimental on Cloudflare. It was tested locally on 2026-09-16 with
+`@opennextjs/cloudflare` 1.20.6 and Wrangler 4.132. `app/book/layout.tsx` repeats the auth
+check on the server, so the book stays private even if the proxy misbehaves.
+
 ## Project map
 
 - `app/` — routes, layout, error/loading states, and auth callback
