@@ -4,7 +4,9 @@ Last updated 2026-09-16. Read this first when picking the project back up.
 
 ## How the app runs today
 
-- No `.env.local` exists, so the app runs in **local preview mode**: a yellow ribbon, no
+- Supabase project `kkwrrakcsebrwronsydh` is connected for builds through the committed
+  `.env.production` (public URL + publishable key; the schema has been run). `npm run dev`
+  doesn't read that file, so local dev without `.env.local` still runs in **local preview mode**: a yellow ribbon, no
   real sign-in, and everything is saved in the browser's `localStorage`. Supabase code
   paths exist but have not been exercised against a real project.
 - The folder is a git repository (initialised 2026-09-16, no remote yet). The first commit

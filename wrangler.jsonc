@@ -8,5 +8,11 @@
     "directory": ".open-next/assets",
     "binding": "ASSETS"
   },
+  // Mirrors .env.production so deploys don't wipe the dashboard copies. The app reads the
+  // build-time values from .env.production; these only matter at runtime.
+  "vars": {
+    "NEXT_PUBLIC_SUPABASE_URL": "https://kkwrrakcsebrwronsydh.supabase.co",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "sb_publishable_PWdyYAWMNlOx-2lFiDaVNA_vIgVl-jY"
+  },
   "services": [{ "binding": "WORKER_SELF_REFERENCE", "service": "6toc" }]
 }
