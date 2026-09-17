@@ -7,6 +7,13 @@
       "runtimeArgs": ["run", "dev"],
       "port": 3016,
       "url": "http://127.0.0.1:3016"
+    },
+    {
+      "name": "6toc-local-stack",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev:local"],
+      "port": 3016,
+      "url": "http://127.0.0.1:3016"
     }
   ]
 }

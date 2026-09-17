@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev --hostname 127.0.0.1 --port 3016",
+    "dev:local": "NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54400 NEXT_PUBLIC_SUPABASE_ANON_KEY=local-anon npm run dev",
+    "test:rls": "supabase/tests/run.sh",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",

@@ -69,6 +69,40 @@ export interface Milestone {
   createdAt: string;
 }
 
+export type InviteStatus = "pending" | "accepted" | "declined" | "revoked";
+
+export interface Supporter {
+  id: string;
+  challengeId: string;
+  name: string;
+  email: string;
+  status: InviteStatus;
+  inviteToken: string;
+  goalIds: string[];
+  acceptedAt?: string;
+  createdAt: string;
+}
+
+export type EncouragementKind = "cheer" | "comment";
+
+/** A cheer or comment on a goal, or on one of its plan steps or milestones. */
+export interface Encouragement {
+  id: string;
+  supporterId: string;
+  goalId: string;
+  planItemId?: string;
+  milestoneId?: string;
+  kind: EncouragementKind;
+  message?: string;
+  createdAt: string;
+}
+
+export interface EncouragementTarget {
+  goalId: string;
+  planItemId?: string;
+  milestoneId?: string;
+}
+
 export interface BookData {
   profile: Profile;
   challenge: Challenge;
@@ -76,6 +110,9 @@ export interface BookData {
   planItems: PlanItem[];
   pocketItems: PocketItem[];
   milestones: Milestone[];
+  /** Always empty in preview mode: supporters need real accounts. */
+  supporters: Supporter[];
+  encouragements: Encouragement[];
 }
 
 export interface GoalDraft {
@@ -90,4 +127,33 @@ export interface OnboardingDraft {
   startDate: string;
   endDate: string;
   goals: GoalDraft[];
+}
+
+/** What a supporter can open: someone else's book, limited to the goals they were given. */
+export interface SupportedBook {
+  supporterId: string;
+  ownerName: string;
+  startDate: string;
+  endDate: string;
+  goals: Goal[];
+  planItems: PlanItem[];
+  milestones: Milestone[];
+  /** Only this supporter's own cheers and comments. */
+  encouragements: Encouragement[];
+}
+
+export interface SupportedBookSummary {
+  supporterId: string;
+  ownerName: string;
+  startDate: string;
+  endDate: string;
+  goalCount: number;
+}
+
+export interface InviteDetails {
+  supporterName: string;
+  ownerName: string;
+  emailHint: string;
+  status: InviteStatus;
+  goalCount: number;
 }

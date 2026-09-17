@@ -47,7 +47,9 @@ button,a { -webkit-tap-highlight-color:transparent; }
 .doodle-note { position:absolute; font:500 clamp(1.2rem,2vw,1.8rem) var(--font-hand); }
 .doodle-note--one { top:10%; left:-5%; transform:rotate(-7deg); }
 .doodle-note--two { bottom:12%; right:-5%; transform:rotate(5deg); color:var(--tomato); }
-.landing__footer { font-size:.7rem; letter-spacing:.12em; text-transform:uppercase; }
+.landing__footer { font-size:.7rem; letter-spacing:.12em; text-transform:uppercase; flex-wrap:wrap; gap:.5rem 1.5rem; }
+.landing__footer a { text-decoration:underline; text-decoration-color:var(--cobalt); text-decoration-thickness:2px; text-underline-offset:3px; }
+.landing__footer a:hover { color:var(--cobalt); }
 @keyframes tick { 0%,15%{transform:rotate(0)} 18%,32%{transform:rotate(58deg)} 35%,49%{transform:rotate(119deg)} 52%,66%{transform:rotate(180deg)} 69%,83%{transform:rotate(241deg)} 86%,100%{transform:rotate(300deg)} }
 .onboarding-shell { min-height:100svh; padding-bottom:4rem; background:linear-gradient(90deg,#ded8ca 0,#e8e1d4 50%,#ded8ca 100%); }
 .book-header,.detail-header { max-width:1180px; margin:auto; padding:1.3rem 1.5rem; display:flex; align-items:center; justify-content:space-between; font-size:.7rem; font-weight:700; letter-spacing:.12em; }
@@ -415,3 +417,111 @@ body::before { opacity:.1; }
 /* "Check your inbox" and sign-in: same hand-lettered headline as the onboarding pages. */
 .message-page h1 { margin:1rem 0; color:var(--cobalt); font:700 clamp(3rem,7vw,4.5rem)/.92 var(--font-hand); letter-spacing:-.02em; }
 .message-page p { line-height:1.6; }
+
+/* How it works now has four cards: two by two until there's room for a row. */
+.how-it-works ol { grid-template-columns:repeat(4,minmax(0,1fr)); }
+.how-step:nth-child(4) { transform:rotate(.4deg); }
+@media(max-width:1100px){.how-it-works ol{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.how-it-works ol{grid-template-columns:1fr}}
+
+/* My corner: supporters on the owner's shelf, and the books a supporter follows. */
+.corner-shelf { max-width:1320px; margin:0 auto; padding:0 1rem 6rem; scroll-margin-top:1rem; }
+.corner-intro { max-width:720px; margin:-1rem 0 2rem; font-size:.9rem; line-height:1.7; }
+.corner-note { position:relative; max-width:720px; padding:1.6rem 1.8rem; }
+.corner-note p { margin:.3rem 0; line-height:1.6; }
+.corner-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr)); gap:1.5rem; align-items:start; }
+.corner-also { margin-top:2rem; }
+.corner-hint { margin:.2rem 0 .8rem; color:var(--muted); font-size:.75rem; line-height:1.5; }
+.supporter-card { position:relative; display:block; min-height:220px; padding:2.2rem 1.6rem 1.2rem; color:var(--ink); background:rgba(255,254,250,.97); border:2px solid var(--ink); border-radius:5px 8px 3px 9px; box-shadow:5px 6px 0 rgba(48,55,212,.12); font:inherit; text-align:left; }
+.supporter-card:nth-child(odd) { transform:rotate(-.4deg); }.supporter-card:nth-child(even) { transform:rotate(.35deg); }
+.supporter-card h3 { margin:0 0 .2rem; color:var(--cobalt); font:700 2.2rem/1 var(--font-hand); overflow-wrap:anywhere; }
+.supporter-card__email { margin:0 0 1rem; color:var(--muted); font-size:.75rem; overflow-wrap:anywhere; }
+.supporter-card__status { position:absolute; top:-.8rem; right:1rem; padding:.2rem .55rem; color:var(--leaf); background:var(--paper-light); border:2px solid currentColor; font:700 .6rem var(--font-mono); letter-spacing:.1em; text-transform:uppercase; transform:rotate(2deg); }
+.supporter-card--pending .supporter-card__status { color:var(--cobalt); }
+.supporter-card--revoked,.supporter-card--declined { background:rgba(255,254,250,.7); box-shadow:none; }
+.supporter-card--revoked .supporter-card__status,.supporter-card--declined .supporter-card__status { color:var(--muted); }
+.supporter-card--revoked h3,.supporter-card--declined h3 { color:var(--muted); }
+.supporter-card .hand-note { margin:.8rem 0 0; }
+.supporter-card .scrap-actions { justify-content:flex-start; margin:.8rem 0 0 -.45rem; }
+.supporter-card .line-field { margin:.5rem 0; }
+.supporter-card .line-field input { font-size:.95rem; }
+.supporter-card--empty { display:flex; flex-direction:column; justify-content:center; gap:.8rem; border-style:dashed; background:rgba(255,254,250,.6); box-shadow:none; cursor:pointer; }
+.supporter-card--empty>strong { color:var(--cobalt); font:700 2.2rem/1 var(--font-hand); }
+.supporter-card--form { grid-column:span 2; }
+.supporter-card--link { min-height:180px; padding-bottom:3.2rem; transition:transform 200ms ease-out,box-shadow 200ms ease-out; }
+.supporter-card--link:hover { transform:translateY(-5px) rotate(0); box-shadow:7px 10px 0 rgba(48,55,212,.14); }
+.supporter-card--link .open-note { color:var(--cobalt); }
+@media(max-width:700px){.supporter-card--form{grid-column:auto}}
+.shared-goals { display:flex; flex-wrap:wrap; gap:.4rem; margin:0; padding:0; list-style:none; }
+.shared-goals li { padding:.25rem .55rem; color:var(--accent); border:1.5px solid currentColor; border-radius:3px 7px 4px 6px; font-size:.7rem; font-weight:700; overflow-wrap:anywhere; }
+.goal-picker { margin:.6rem 0; padding:0; border:0; }
+.goal-picker legend { margin-bottom:.4rem; font:700 1.25rem var(--font-hand); }
+.goal-picker label { display:flex; align-items:center; gap:.6rem; padding:.35rem 0; font-size:.85rem; cursor:pointer; }
+.goal-picker input { width:18px; height:18px; flex:none; accent-color:var(--accent); }
+.goal-picker span { overflow-wrap:anywhere; }
+.invite-ready { position:relative; max-width:720px; margin:0 0 2rem; padding:1.5rem 1.8rem; border-color:var(--leaf); box-shadow:5px 6px 0 rgba(21,148,71,.18); }
+.invite-ready p { margin:.3rem 0 .8rem; line-height:1.6; }
+.invite-ready .eyebrow { color:var(--leaf); }
+.copy-link { display:flex; flex-wrap:wrap; align-items:center; gap:.4rem; margin:.4rem 0; }
+.copy-link input { flex:1 1 14rem; min-width:0; padding:.55rem .6rem; background:rgba(255,255,255,.8); border:2px dashed #a2a2af; border-radius:3px 7px 4px 6px; font:.75rem var(--font-mono); }
+
+/* The invite page. */
+.invite-page form { display:block; margin-top:1.5rem; }
+.invite-page h1 { overflow-wrap:anywhere; }
+
+/* Someone else's book, as a supporter sees it. */
+.supported-intro { position:relative; width:min(1100px,calc(100% - 2rem)); margin:1rem auto 2rem; padding:3rem clamp(1.5rem,6vw,5rem); }
+.supported-intro h1 { margin:.8rem 0 1.2rem; color:var(--cobalt); font:700 clamp(3.4rem,7vw,6rem)/.88 var(--font-hand); transform:rotate(-1.5deg); overflow-wrap:anywhere; }
+.supported-intro p:last-child { max-width:640px; line-height:1.7; font-size:.9rem; }
+.supported-error { max-width:1100px; margin:0 auto 1rem; padding:0 1rem; }
+.shared-goal { position:relative; width:min(1100px,calc(100% - 2rem)); margin:0 auto 2.5rem; padding:clamp(1.5rem,5vw,3.5rem); background-color:rgba(255,254,250,.97); background-image:radial-gradient(rgba(48,55,212,.1) .7px,transparent .7px); background-size:20px 20px; border:2px solid var(--ink); border-radius:4px 8px 3px 7px; box-shadow:6px 7px 0 color-mix(in srgb,var(--accent) 20%,transparent); }
+.shared-goal__head { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:2rem; align-items:start; }
+.shared-goal h2 { margin:.4rem 0 1rem; color:var(--accent); font:700 clamp(2.6rem,5vw,4.4rem)/.9 var(--font-hand); overflow-wrap:anywhere; }
+.shared-goal .goal-date-note { width:130px; }
+.shared-goal .goal-date-note strong { font-size:1.7rem; }
+.shared-goal>.done-early { margin:1rem 0 0; }
+.shared-goal__cheer { margin:1.2rem 0 .4rem; }
+.shared-goal__body { display:grid; grid-template-columns:minmax(0,1.2fr) minmax(0,1fr); gap:clamp(1.5rem,5vw,4rem); margin-top:1.5rem; }
+.shared-goal h3 { margin:0 0 .6rem; color:var(--accent); font:700 1.9rem var(--font-hand); }
+.shared-goal h3 small { margin-left:.4rem; color:var(--muted); font:700 .65rem var(--font-mono); letter-spacing:.08em; }
+.plan-list--readonly .hand-checkbox { display:block; cursor:default; }
+.shared-goal .milestone-list h4 { margin:.2rem 0; font:600 1.1rem var(--font-display); }
+.shared-goal .milestone-list .scrap-actions { justify-content:flex-start; margin-left:-.45rem; }
+.shared-goal__notes { margin-top:2rem; padding-top:1.5rem; border-top:2px dotted rgba(25,25,29,.2); }
+.cheer-button { display:inline-flex; align-items:center; gap:.3rem; padding:.25rem .6rem; color:var(--accent); background:transparent; border:1.5px solid currentColor; border-radius:12px 9px 13px 8px; font:700 1.05rem var(--font-hand); white-space:nowrap; cursor:pointer; transition:transform 160ms ease,background 160ms ease; }
+.cheer-button span { font-size:1.1rem; line-height:1; }
+.cheer-button:hover:not(:disabled) { transform:translateY(-2px) rotate(-2deg); }
+.cheer-button[aria-pressed="true"] { color:white; background:var(--accent); }
+.cheer-button:disabled { opacity:.5; cursor:wait; }
+.cheer-button--big { padding:.45rem 1rem; font-size:1.35rem; }
+@media(prefers-reduced-motion:reduce){.cheer-button{transition:none}}
+.note-form { display:grid; gap:.5rem; max-width:640px; }
+.note-form textarea { width:100%; min-height:90px; padding:.7rem .8rem; background:rgba(255,255,255,.7); border:2px dashed #a2a2af; border-radius:3px 7px 4px 6px; font:.9rem var(--font-mono); resize:vertical; }
+.note-form textarea:focus { border-color:var(--cobalt); outline:none; }
+.note-form .ink-button { min-height:42px; padding:.45rem 1rem; }
+.note-form--compact { width:100%; margin-top:.4rem; }
+.note-form--compact textarea { min-height:64px; }
+.note-list { display:grid; gap:.8rem; margin:1.4rem 0 0; padding:0; list-style:none; }
+.note-list li { position:relative; padding:1rem 1.2rem .6rem; background:#f0dfa0; box-shadow:3px 4px 0 rgba(0,0,0,.07); transform:rotate(-.3deg); }
+.note-list li:nth-child(even) { background:#d8e3eb; transform:rotate(.3deg); }
+.note-list p { margin:0 0 .4rem; white-space:pre-wrap; overflow-wrap:anywhere; line-height:1.55; }
+.note-list li>span:not(.confirm-delete) { display:block; color:var(--muted); font-size:.7rem; }
+.note-list li>.scrap-action,.note-list li>.confirm-delete { margin:.2rem 0 0 -.45rem; }
+.note-list__cheer { background:rgba(255,255,255,.75)!important; }
+.note-list__cheer p span { color:var(--accent); }
+.cheer-count { display:inline-block; margin-left:.5rem; padding:.05rem .4rem; color:var(--accent); border:1.5px solid currentColor; border-radius:9px; font:700 .7rem var(--font-mono); vertical-align:middle; }
+.supported-footer { max-width:1100px; margin:0 auto; padding:0 1rem 5rem; text-align:right; }
+@media(max-width:850px){.shared-goal__body{grid-template-columns:1fr}}
+@media(max-width:560px){.supported-intro h1{font-size:3.2rem}.book-header>span{text-align:center}.supported-book .book-header .text-button,.supporting-list .book-header .text-button{display:inline}}
+.shared-goal .milestone-list { margin-top:1rem; gap:1.2rem; }
+/* The owner's goal page floats its deadline note from 850px down; on a supporter's page the
+   note sits in its own column until phones, where it becomes a corner stamp. */
+@media(max-width:850px){.shared-goal .goal-date-note{position:relative;top:auto;right:auto;width:130px}}
+@media(max-width:560px){.shared-goal__head{grid-template-columns:1fr}.shared-goal__head>div:first-child{padding-right:100px}.shared-goal .goal-date-note{position:absolute;top:1rem;right:1rem;width:92px}.shared-goal .goal-date-note strong{font-size:1.2rem}.shared-goal .goal-date-note small{font-size:.7rem}}
+/* Phone plan rows stack into two columns, so the row's cheer button needs the text column. */
+@media(max-width:560px){.plan-list--readonly li .cheer-button{grid-column:2;justify-self:start;margin:.15rem 0 .5rem}}
+
+/* "open this page →" used to be pinned to the card's corner, where it sat on top of the
+   last row of counts on narrow cards. It now follows the list. */
+.goal-scrap .open-note,.supporter-card--link .open-note { position:static; display:block; margin-top:1.1rem; text-align:right; }
+.supporter-card--link { padding-bottom:1.4rem; }

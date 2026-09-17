@@ -5,7 +5,8 @@ import { FormEvent, useState } from "react";
 import { Brand, HandDrawnButton, HandDrawnLink, PaperPage, PreviewRibbon, Tape } from "@/components/ui";
 import { sendMagicLink } from "@/lib/data-store";
 
-export function SignInForm({ productionMode, linkError }: { productionMode: boolean; linkError: string }) {
+/** `next` is where the emailed link lands once it has signed the reader in. */
+export function SignInForm({ productionMode, linkError, next }: { productionMode: boolean; linkError: string; next: string }) {
   const [email, setEmail] = useState("");
   const [error, setError] = useState(linkError);
   const [status, setStatus] = useState<"idle" | "sending" | "sent">("idle");
@@ -14,7 +15,7 @@ export function SignInForm({ productionMode, linkError }: { productionMode: bool
     event.preventDefault(); setError("");
     if (!/^\S+@\S+\.\S+$/.test(email)) return setError("That email looks unfinished.");
     setStatus("sending");
-    try { await sendMagicLink(email.trim(), "/book"); setStatus("sent"); }
+    try { await sendMagicLink(email.trim(), next); setStatus("sent"); }
     catch (cause) { setError(cause instanceof Error ? cause.message : "We couldn’t send the link. Try once more."); setStatus("idle"); }
   }
 

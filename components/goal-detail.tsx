@@ -6,13 +6,13 @@ import { useRouter } from "next/navigation";
 import { ConfirmDelete } from "@/components/confirm-delete";
 import { GoalForm } from "@/components/goal-form";
 import { HandDrawnButton, LoadingPage, PreviewRibbon, ScribbleDivider, Tape } from "@/components/ui";
-import { addMilestone, addPlanItem, addPocketItem, completeGoal, deleteMilestone, deletePlanItem, deletePocketItem, loadBook, reopenGoal, reorderPlanItems, updateGoal, updateMilestone, updatePlanItem, updatePocketItem } from "@/lib/data-store";
+import { addMilestone, addPlanItem, addPocketItem, completeGoal, deleteMilestone, deletePlanItem, deletePocketItem, loadBook, removeEncouragement, reopenGoal, reorderPlanItems, updateGoal, updateMilestone, updatePlanItem, updatePocketItem } from "@/lib/data-store";
 import { daysBetween, formatShortDate, toDateInput } from "@/lib/dates";
-import type { BookData, Goal, Milestone, PlanItem, PocketItem } from "@/lib/types";
+import type { BookData, Encouragement, Goal, Milestone, PlanItem, PocketItem, Supporter } from "@/lib/types";
 
-type Tab = "plan" | "pocket" | "milestones" | "vision";
+type Tab = "plan" | "pocket" | "milestones" | "corner" | "vision";
 type Mutate = (action: () => Promise<void>) => Promise<boolean>;
-interface PanelProps<T> { items: T[]; goal: Goal; busy: boolean; mutate: Mutate }
+interface PanelProps<T> { items: T[]; goal: Goal; busy: boolean; mutate: Mutate; encouragements: Encouragement[] }
 
 export function GoalDetail({ goalId, productionMode }: { goalId: string; productionMode: boolean }) {
   const router = useRouter();
@@ -34,6 +34,10 @@ export function GoalDetail({ goalId, productionMode }: { goalId: string; product
   const plans = book.planItems.filter((item) => item.goalId === goalId).sort((a, b) => a.sortOrder - b.sortOrder);
   const pockets = book.pocketItems.filter((item) => item.goalId === goalId);
   const milestones = book.milestones.filter((item) => item.goalId === goalId);
+  const encouragements = book.encouragements.filter((item) => item.goalId === goalId);
+  // Supporters need accounts, so preview mode has no Corner tab.
+  const tabs: Tab[] = productionMode ? ["plan", "pocket", "milestones", "corner", "vision"] : ["plan", "pocket", "milestones", "vision"];
+  const counts: Record<Tab, number | null> = { plan: plans.length, pocket: pockets.length, milestones: milestones.length, corner: encouragements.length, vision: null };
   /** Runs a write, reloads the book, and reports whether it worked so forms know when to clear. */
   const mutate: Mutate = async (action) => {
     setBusy(true); setError("");
@@ -49,12 +53,12 @@ export function GoalDetail({ goalId, productionMode }: { goalId: string; product
     {goal.status === "completed"
       ? <div className="completion-banner"><strong>DONE EARLY ✓</strong><span>{Math.max(0, daysBetween(goal.completedAt ?? goal.deadline, goal.deadline))} days to spare</span><button type="button" className="scrap-action" disabled={busy} onClick={() => mutate(() => reopenGoal(goal.id))}>not quite — reopen</button></div>
       : <button className="mark-goal-done" disabled={busy} onClick={() => mutate(() => completeGoal(goal.id))}>I did the thing ✓</button>}
-    <nav className="paper-tabs" aria-label="Goal sections">{(["plan", "pocket", "milestones", "vision"] as Tab[]).map((name) => <button key={name} aria-current={tab === name ? "page" : undefined} onClick={() => setTab(name)}>{name === "pocket" ? "Pocket" : name[0].toUpperCase() + name.slice(1)}{name !== "vision" && <span>{name === "plan" ? plans.length : name === "pocket" ? pockets.length : milestones.length}</span>}</button>)}</nav>
-    <section className="detail-page">{error && !editingGoal && <p className="form-error" role="alert">{error}</p>}{tab === "plan" && <PlanPanel items={plans} goal={goal} busy={busy} mutate={mutate} />}{tab === "pocket" && <PocketPanel items={pockets} goal={goal} busy={busy} mutate={mutate} />}{tab === "milestones" && <MilestonesPanel items={milestones} goal={goal} busy={busy} mutate={mutate} />}{tab === "vision" && <VisionPanel />}</section>
+    <nav className="paper-tabs" aria-label="Goal sections">{tabs.map((name) => <button key={name} aria-current={tab === name ? "page" : undefined} onClick={() => setTab(name)}>{name[0].toUpperCase() + name.slice(1)}{counts[name] !== null && <span>{counts[name]}</span>}</button>)}</nav>
+    <section className="detail-page">{error && !editingGoal && <p className="form-error" role="alert">{error}</p>}{tab === "plan" && <PlanPanel items={plans} goal={goal} busy={busy} mutate={mutate} encouragements={encouragements} />}{tab === "pocket" && <PocketPanel items={pockets} goal={goal} busy={busy} mutate={mutate} encouragements={encouragements} />}{tab === "milestones" && <MilestonesPanel items={milestones} goal={goal} busy={busy} mutate={mutate} encouragements={encouragements} />}{tab === "corner" && <CornerPanel goal={goal} busy={busy} mutate={mutate} encouragements={encouragements} supporters={book.supporters} plans={plans} milestones={milestones} />}{tab === "vision" && <VisionPanel />}</section>
   </main>;
 }
 
-function PlanPanel({ items, goal, busy, mutate }: PanelProps<PlanItem>) {
+function PlanPanel({ items, goal, busy, mutate, encouragements }: PanelProps<PlanItem>) {
   const [title, setTitle] = useState(""); const [date, setDate] = useState("");
   const [editing, setEditing] = useState<string | null>(null); const [editTitle, setEditTitle] = useState(""); const [editDate, setEditDate] = useState("");
   function submit(event: FormEvent) {
@@ -77,7 +81,7 @@ function PlanPanel({ items, goal, busy, mutate }: PanelProps<PlanItem>) {
       <button className="hand-checkbox" aria-label={item.completed ? `Mark ${item.title} incomplete` : `Mark ${item.title} complete`} aria-pressed={item.completed} disabled={busy} onClick={() => mutate(() => updatePlanItem(item.id, { completed: !item.completed }))}><svg viewBox="0 0 32 32"><path className="box" d="M4 5c7-2 17-1 24 0 1 8 0 16-1 23-7 1-16 0-23-1C3 20 3 12 4 5Z" /><path className="check" d="m8 16 6 7L26 9" /></svg></button>
       <div>{editing === item.id
         ? <form className="edit-row" onSubmit={(e) => saveEdit(e, item)}><input autoFocus aria-label="Step" value={editTitle} onChange={(e) => setEditTitle(e.target.value)} /><input type="date" aria-label="Due date" min={goal.startDate} max={goal.deadline} value={editDate} onChange={(e) => setEditDate(e.target.value)} /><button disabled={busy}>save</button><button type="button" onClick={() => setEditing(null)}>cancel</button></form>
-        : <><strong>{item.title}</strong>{item.dueDate && <span>by {formatShortDate(item.dueDate)}</span>}</>}</div>
+        : <><strong>{item.title}</strong><CheerCount items={encouragements.filter((e) => e.planItemId === item.id)} />{item.dueDate && <span>by {formatShortDate(item.dueDate)}</span>}</>}</div>
       {editing !== item.id && <div className="scrap-actions">
         <button type="button" className="scrap-action" disabled={busy || index === 0} aria-label={`Move ${item.title} up`} onClick={() => move(index, -1)}>↑</button>
         <button type="button" className="scrap-action" disabled={busy || index === items.length - 1} aria-label={`Move ${item.title} down`} onClick={() => move(index, 1)}>↓</button>
@@ -104,7 +108,7 @@ function PocketPanel({ items, goal, busy, mutate }: PanelProps<PocketItem>) {
     </article>)}</div>}</div></div>;
 }
 
-function MilestonesPanel({ items, goal, busy, mutate }: PanelProps<Milestone>) {
+function MilestonesPanel({ items, goal, busy, mutate, encouragements }: PanelProps<Milestone>) {
   const today = toDateInput(new Date());
   const [title, setTitle] = useState(""); const [description, setDescription] = useState(""); const [date, setDate] = useState(today);
   const [editing, setEditing] = useState<string | null>(null); const [edit, setEdit] = useState({ title: "", description: "", achievedAt: "" });
@@ -117,8 +121,35 @@ function MilestonesPanel({ items, goal, busy, mutate }: PanelProps<Milestone>) {
     {!items.length ? <EmptyState title="Nothing worth pinning to the page yet." note="Keep going. The first pin usually arrives quietly." /> : <div className="milestone-list">{items.map((item) => <article key={item.id}><span className="pin" aria-hidden="true" />
       {editing === item.id
         ? <form className="scrap-edit" onSubmit={(e) => saveEdit(e, item)}><input type="date" aria-label="Date" min={goal.startDate} max={today} value={edit.achievedAt} onChange={(e) => setEdit({ ...edit, achievedAt: e.target.value })} /><input autoFocus aria-label="What happened" value={edit.title} onChange={(e) => setEdit({ ...edit, title: e.target.value })} /><input aria-label="A little more" value={edit.description} onChange={(e) => setEdit({ ...edit, description: e.target.value })} placeholder="What made it matter?" /><div className="scrap-actions"><button type="button" className="scrap-action" onClick={() => setEditing(null)}>cancel</button><button className="scrap-action" disabled={busy || !edit.title.trim() || !edit.achievedAt}>save</button></div></form>
-        : <><time dateTime={item.achievedAt}>{formatShortDate(item.achievedAt)}</time><h3>{item.title}</h3>{item.description && <p>{item.description}</p>}<div className="scrap-actions"><button type="button" className="scrap-action" aria-label={`Edit ${item.title}`} onClick={() => { setEditing(item.id); setEdit({ title: item.title, description: item.description, achievedAt: item.achievedAt }); }}>edit</button><ConfirmDelete label={item.title} disabled={busy} onConfirm={() => void mutate(() => deleteMilestone(item.id))} /></div></>}
+        : <><time dateTime={item.achievedAt}>{formatShortDate(item.achievedAt)}</time><h3>{item.title}</h3><CheerCount items={encouragements.filter((e) => e.milestoneId === item.id)} />{item.description && <p>{item.description}</p>}<div className="scrap-actions"><button type="button" className="scrap-action" aria-label={`Edit ${item.title}`} onClick={() => { setEditing(item.id); setEdit({ title: item.title, description: item.description, achievedAt: item.achievedAt }); }}>edit</button><ConfirmDelete label={item.title} disabled={busy} onConfirm={() => void mutate(() => deleteMilestone(item.id))} /></div></>}
     </article>)}</div>}</div></div>;
+}
+
+/** A small "♥ 2" beside a step or milestone that people in the corner reacted to. */
+function CheerCount({ items }: { items: Encouragement[] }) {
+  if (!items.length) return null;
+  const cheers = items.filter((e) => e.kind === "cheer").length;
+  const notes = items.length - cheers;
+  const words = [cheers && `${cheers} ${cheers === 1 ? "cheer" : "cheers"}`, notes && `${notes} ${notes === 1 ? "note" : "notes"}`].filter(Boolean).join(", ");
+  return <small className="cheer-count" title={words} aria-label={`From your corner: ${words}`}>♥ {items.length}</small>;
+}
+
+function CornerPanel({ goal, busy, mutate, encouragements, supporters, plans, milestones }: { goal: Goal; busy: boolean; mutate: Mutate; encouragements: Encouragement[]; supporters: Supporter[]; plans: PlanItem[]; milestones: Milestone[] }) {
+  const following = supporters.filter((s) => s.status === "accepted" && s.goalIds.includes(goal.id));
+  const invited = supporters.filter((s) => s.status === "pending" && s.goalIds.includes(goal.id));
+  const nameOf = (id: string) => supporters.find((s) => s.id === id)?.name ?? "Someone";
+  function where(e: Encouragement): string {
+    if (e.planItemId) return `the step “${plans.find((p) => p.id === e.planItemId)?.title ?? "a step"}”`;
+    if (e.milestoneId) return `the milestone “${milestones.find((m) => m.id === e.milestoneId)?.title ?? "a milestone"}”`;
+    return "this thing";
+  }
+  return <div className="panel-layout"><div><p className="eyebrow">CORNER</p><h2>Who’s<br />cheering.</h2><p className="hand-note">{following.length ? `Followed by ${following.map((s) => s.name).join(", ")}.` : "Nobody follows this one yet."}{invited.length ? ` ${invited.length} invite${invited.length === 1 ? "" : "s"} waiting.` : ""}</p><Link href="/book#corner" className="text-button">Manage my corner →</Link></div><div>
+    {!encouragements.length ? <EmptyState title="No cheers on this page yet." note={following.length ? "They can see it. Give them something to cheer." : "Invite someone from your book to follow this thing."} /> : <ul className="note-list note-list--owner">{encouragements.map((e) => <li key={e.id} className={`note-list__${e.kind}`}>
+      {e.kind === "comment" ? <p>{e.message}</p> : <p><span aria-hidden="true">♥</span> cheered {where(e)}</p>}
+      <span>{nameOf(e.supporterId)} · {formatShortDate(toDateInput(new Date(e.createdAt)))}{e.kind === "comment" && e.milestoneId ? ` · on ${where(e)}` : ""}</span>
+      <ConfirmDelete label={e.kind === "comment" ? `note from ${nameOf(e.supporterId)}` : `cheer from ${nameOf(e.supporterId)}`} disabled={busy} onConfirm={() => void mutate(() => removeEncouragement(e.id))} />
+    </li>)}</ul>}
+  </div></div>;
 }
 
 function VisionPanel() { return <div className="vision-panel"><div className="vision-frame" aria-hidden="true"><svg viewBox="0 0 500 300"><path d="M40 238c66-55 92-24 144-77 37-39 57-100 104-90 46 9 39 79 73 93 39 17 59-7 101 46" /><circle cx="395" cy="70" r="28" /><path d="M68 258c107-17 224-9 365-2" /></svg><span>six months from here</span></div><div><p className="eyebrow">VISION</p><h2>See the other side.</h2><p>Before you start, picture where you’re going.</p><button className="ink-button" disabled title="Vision generation is coming in a later phase">Generate my six-month vision ✦</button><p className="hand-note">coming later — the blank space is intentional</p></div></div>; }

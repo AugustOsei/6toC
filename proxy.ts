@@ -19,12 +19,15 @@ export async function proxy(request: NextRequest) {
   });
   const { data } = await supabase.auth.getClaims();
 
-  // A quick bounce for signed-out readers; app/book/layout.tsx does the real check.
+  // A quick bounce for signed-out readers; the layouts under /book and /supporting do the
+  // real check. The sign-in link brings them back to the page they asked for.
   const path = request.nextUrl.pathname;
-  if (!data?.claims && (path === "/book" || path.startsWith("/book/"))) {
-    return NextResponse.redirect(new URL("/sign-in", request.url));
+  if (!data?.claims && PRIVATE.some((root) => path === root || path.startsWith(`${root}/`))) {
+    return NextResponse.redirect(new URL(`/sign-in?next=${encodeURIComponent(path)}`, request.url));
   }
   return response;
 }
+
+const PRIVATE = ["/book", "/supporting"];
 
 export const config = { matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"] };

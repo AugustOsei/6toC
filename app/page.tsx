@@ -22,7 +22,7 @@ export default function HomePage() {
     </section>
     <section className="how-it-works" aria-labelledby="how-it-works-title">
       <p className="eyebrow">HOW IT WORKS</p>
-      <h2 id="how-it-works-title">Three steps. No dashboard.</h2>
+      <h2 id="how-it-works-title">Four steps. No dashboard.</h2>
       <ol>
         {STEPS.map((step, index) => <li key={step.title} className={`how-step accent-${step.accent}`}>
           <span className="how-step__number">0{index + 1}</span>
@@ -33,13 +33,14 @@ export default function HomePage() {
       </ol>
       <HandDrawnLink href="/onboarding">Start my six months <span aria-hidden="true">→</span></HandDrawnLink>
     </section>
-    <footer className="landing__footer"><span>Begin anywhere.</span><span>© 6TOC</span></footer>
+    <footer className="landing__footer"><span>Begin anywhere.</span><span>A project by <a href="https://www.augustengine.com/" target="_blank" rel="noopener">August Engine</a></span><span>© 6TOC</span></footer>
   </main>;
 }
 
-// Only promise what the app does today. Add "invite your people" once supporters ship.
+// Only promise what the app does today.
 const STEPS = [
   { accent: "tomato", title: "Pick up to three", body: "Name the things that matter, and write down what “done” looks like for each one.", note: "fewer is fine" },
   { accent: "cobalt", title: "Give each a deadline", body: "Every thing gets its own finish date, somewhere inside the next six months.", note: "1 month? 4? your call" },
   { accent: "leaf", title: "Plan it, tick it off", body: "Break each thing into small moves, keep notes and links in its pocket, and pin the wins as they land.", note: "every tick is progress" },
+  { accent: "tomato", title: "Invite your people", body: "Let the people you trust follow the things you choose. They can cheer you on and leave a note. Your pocket stays private.", note: "a little push helps" },
 ] as const;
